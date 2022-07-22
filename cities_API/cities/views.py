@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -21,6 +22,7 @@ CACHE_TTL = getattr(settings, 'REDIS_CACHE_TTL', DEFAULT_TIMEOUT)
 class CityView(viewsets.ViewSet):
     """City managing class"""
 
+    @swagger_auto_schema(responses={201: CityListSerializer, 400: "Bad Request"})
     def list(self, request):
         """List all cities"""
         if "city_list" in cache:
@@ -31,6 +33,7 @@ class CityView(viewsets.ViewSet):
         serializer = CityListSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=CityCreateSerializer, responses={201: CityListSerializer, 400: "Bad Request"})
     def create(self, request):
         """Create a new city"""
         city = CityCreateSerializer(data=request.data)
@@ -52,6 +55,7 @@ class CityView(viewsets.ViewSet):
         cache.set("city_names", cached_cities, timeout=None)
         return Response(status=201)
 
+    @swagger_auto_schema(request_body=CityUpdateSerializer, responses={200: "OK", 400: "Bad Request"})
     @permission_classes([IsAdminUser])
     def update(self, request):
         update_data = CityUpdateSerializer(data=request.data)
@@ -64,18 +68,21 @@ class CityView(viewsets.ViewSet):
         city.longitude = data["longitude"]
         city.UTC = data["UTC"]
         city.save()
-        return Response(status=201)
+        return Response(status=200)
 
+    @swagger_auto_schema(responses={200: "OK", 404: "Not Found"})
     @permission_classes([IsAdminUser])
     def delete(self, request, city_id):
         city = get_object_or_404(City, id=city_id)
         city.delete()
-        return Response(status=201)
+        return Response(status=200)
 
 
 class Geolocation(viewsets.ViewSet):
     """Locate city by longitude, latitude"""
 
+    @swagger_auto_schema(request_body=GeolocationInputDataSerializer, responses={201: GeolocationOutputDataSerializer,
+                                                                                 400: "Bad Request"})
     def get_city_by_geoposition(self, request):
 
         # validating input data
@@ -104,6 +111,7 @@ class VisitedPlaces(viewsets.ViewSet):
 
     permission_classes = [IsAuthenticated, ]
 
+    @swagger_auto_schema(responses={201: CityListSerializer, 404: "Not Found"})
     def list(self, request):
         user = get_object_or_404(User, pk=request.user.pk)
         visited_cities = City.objects.filter(visited_by=user)
