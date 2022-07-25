@@ -100,7 +100,6 @@ class Geolocation(viewsets.ViewSet):
             city[0].visited_by.add(user)
             city[0].save()
 
-
         # validating output data
         serializer = GeolocationOutputDataSerializer(city, many=True)
         return Response(serializer.data)
@@ -118,7 +117,4 @@ class VisitedPlaces(viewsets.ViewSet):
         serializer = CityListSerializer(visited_cities, many=True)
         return Response(serializer.data)
 
-
-#visited places pagination, autofill
-
-
+# visited places pagination, autofill
