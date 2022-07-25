@@ -11,7 +11,7 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 from User.models import User
 
-from .services import get_city_by_geoposition
+from .services import get_city_by_geoposition, VisitedPlacesPagination
 from .models import City
 from .serializers import CityListSerializer, CityCreateSerializer, GeolocationOutputDataSerializer, \
     GeolocationInputDataSerializer, CityUpdateSerializer
@@ -21,6 +21,8 @@ CACHE_TTL = getattr(settings, 'REDIS_CACHE_TTL', DEFAULT_TIMEOUT)
 
 class CityView(viewsets.ViewSet):
     """City managing class"""
+
+    pagination_class = VisitedPlacesPagination
 
     @swagger_auto_schema(responses={201: CityListSerializer, 400: "Bad Request"})
     def list(self, request):
@@ -109,6 +111,7 @@ class VisitedPlaces(viewsets.ViewSet):
     """Display places, user located by Geolocation class in reverse order"""
 
     permission_classes = [IsAuthenticated, ]
+    pagination_class = VisitedPlacesPagination
 
     @swagger_auto_schema(responses={201: CityListSerializer, 404: "Not Found"})
     def list(self, request):
