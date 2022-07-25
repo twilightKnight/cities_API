@@ -6,6 +6,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class SetCookieMixin:
+    """Store JWT token in cookies instead of request headers"""
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
@@ -24,4 +26,5 @@ class SetCookieMixin:
 
 
 class Login(SetCookieMixin, TokenObtainPairView):
+    """User Login class"""
     pass

@@ -35,6 +35,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """Custom User model"""
 
     username = models.CharField(db_index=True, unique=True, max_length=255)
     email = models.EmailField(max_length=255)

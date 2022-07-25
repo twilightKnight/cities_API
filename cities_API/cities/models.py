@@ -3,6 +3,8 @@ from User.models import User
 
 
 class City(models.Model):
+    """Base City model"""
+
     city_name = models.CharField(max_length=50)
     longitude = models.FloatField()
     latitude = models.FloatField()

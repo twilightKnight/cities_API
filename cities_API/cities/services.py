@@ -4,7 +4,9 @@ from .models import City
 from rest_framework.pagination import PageNumberPagination
 
 
-def get_city_by_geoposition(longitude, latitude):
+def get_city_by_geoposition(longitude: float, latitude: float) -> City:
+    """Return city object closest to provided longitude, latitude"""
+
     city = City.objects.raw(f"SELECT id, city_name, abs(longitude-{longitude})+abs(latitude-{latitude})"
                             " as difference "
                             "FROM cities_city "
@@ -13,6 +15,8 @@ def get_city_by_geoposition(longitude, latitude):
 
 
 class VisitedPlacesPagination(PageNumberPagination):
+    """Pagination class for Visited Cities API call"""
+
     page_size = 3
     max_page_size = 1000
 
